@@ -1,0 +1,50 @@
+/*a) Write a Python program to store roll numbers of student in array who attended 
+training program in random order. Write function for searching whether particular 
+student attended training program or not, using Linear search and Sentinel search. 
+b) Write a Python program to store roll numbers of student array who attended training 
+program in sorted order. Write function for searching whether particular student 
+attended training program or not, using Binary search and Fibonacci search*/
+
+def linear_search(arr, key):
+    """Function for Linear Search."""
+    for i in range(len(arr)):
+        if arr[i] == key:
+            return i  # Return index if found
+    return -1  # Return -1 if not found
+
+
+def sentinel_search(arr, key):
+    """Function for Sentinel Search."""
+    n = len(arr)
+    last = arr[-1]  # Save the last element
+    arr[-1] = key  # Set the last element as the key (sentinel)
+    i = 0
+
+    while arr[i] != key:
+        i += 1
+
+    arr[-1] = last  # Restore the last element
+
+    if i < n - 1 or arr[-1] == key:  # Check if found within bounds
+        return i
+    return -1
+
+
+# Main Program
+if __name__ == "__main__":
+    roll_numbers = list(map(int, input("Enter roll numbers of students: ").split()))
+    key = int(input("Enter the roll number to search: "))
+
+    # Linear Search
+    linear_result = linear_search(roll_numbers, key)
+    if linear_result != -1:
+        print(f"Student with roll number {key} attended training (found using Linear Search).")
+    else:
+        print(f"Student with roll number {key} did not attend training (not found using Linear Search).")
+
+    # Sentinel Search
+    sentinel_result = sentinel_search(roll_numbers, key)
+    if sentinel_result != -1:
+        print(f"Student with roll number {key} attended training (found using Sentinel Search).")
+    else:
+        print(f"Student with roll number {key} did not attend training (not found using Sentinel Search).")
