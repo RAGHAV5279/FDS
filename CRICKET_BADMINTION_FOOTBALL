@@ -1,0 +1,85 @@
+'''In second year computer engineering class, group A student’s play cricket, group B  
+students play badminton and group C students play football. 
+Write a Python program using functions to compute following: -
+a) List of students who play both cricket and badminton 
+b) List of students who play either cricket or badminton but not both 
+c) Number of students who play neither cricket nor badminton
+d) Number of students who play cricket and football but not badminton.
+(Note- While realizing the group, duplicate entries should be avoided, Do not use SET 
+built-in functions) give with comments'''
+
+
+# Function to remove duplicates from a list
+def remove_duplicates(lst):
+    unique_lst = []  # To store unique elements
+    for item in lst:
+        if item not in unique_lst:  # Check if the item is already in the list
+            unique_lst.append(item)
+    return unique_lst
+
+# Function to find the intersection of two lists (common elements)
+def intersection(list1, list2):
+    result = []  # To store common elements
+    for item in list1:
+        if item in list2 and item not in result:  # Avoid duplicates
+            result.append(item)
+    return result
+
+# Function to find the union of two lists (all unique elements)
+def union(list1, list2):
+    result = list1[:]  # Start with all elements of the first list
+    for item in list2:
+        if item not in result:  # Add elements from the second list if not already present
+            result.append(item)
+    return result
+
+# Function to find the difference between two lists
+def difference(list1, list2):
+    result = []  # To store elements present in list1 but not in list2
+    for item in list1:
+        if item not in list2:
+            result.append(item)
+    return result
+
+# Function to find symmetric difference (elements in either list, but not both)
+def symmetric_difference(list1, list2):
+    union_list = union(list1, list2)  # Combine both lists
+    intersection_list = intersection(list1, list2)  # Find common elements
+    return difference(union_list, intersection_list)  # Subtract intersection from union
+
+# Main function
+def main():
+    # Input lists for each sport
+    cricket = ["A", "B", "C", "D", "E"]     # Students playing Cricket
+    badminton = ["C", "E", "F", "G"]        # Students playing Badminton
+    football = ["A", "C", "H", "I"]         # Students playing Football
+    
+    # Remove duplicates in the input lists (optional, but good practice)
+    cricket = remove_duplicates(cricket)
+    badminton = remove_duplicates(badminton)
+    football = remove_duplicates(football)
+
+    # a) Students who play both cricket and badminton
+    cricket_and_badminton = intersection(cricket, badminton)
+    print("a) Students who play both Cricket and Badminton:", cricket_and_badminton)
+    
+    # b) Students who play either cricket or badminton but not both
+    cricket_xor_badminton = symmetric_difference(cricket, badminton)
+    print("b) Students who play either Cricket or Badminton but not both:", cricket_xor_badminton)
+    
+    # c) Students who play neither cricket nor badminton
+    total_students = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]  # Assume this is the total class list
+    cricket_or_badminton = union(cricket, badminton)  # Students who play either cricket or badminton
+    neither_cricket_nor_badminton = difference(total_students, cricket_or_badminton)
+    print("c) Students who play neither Cricket nor Badminton:", neither_cricket_nor_badminton)
+    
+    # d) Students who play cricket and football but not badminton
+    cricket_and_football = intersection(cricket, football)  # Students playing both Cricket and Football
+    cricket_football_not_badminton = difference(cricket_and_football, badminton)
+    print("d) Students who play Cricket and Football but not Badminton:", cricket_football_not_badminton)
+
+# Run the main function
+if __name__ == "__main__":
+    main()
+
+
