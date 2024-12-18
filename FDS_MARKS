@@ -1,0 +1,95 @@
+'''Write a Python program to store marks scored in subject “Fundamental of Data 
+Structure” by N students in the class. Write functions to compute following:
+a) The average score of class 
+b) Highest score and lowest score of class 
+c) Count of students who were absent for the test
+d) Display mark with highest frequency*/ give with comment and logic in wording'''
+
+
+# Function to compute the average score of the class
+def compute_average(marks):
+    total_marks = 0
+    count = 0
+    for mark in marks:
+        if mark != "A":  # Exclude absent students (changed condition to "A")
+            total_marks += mark
+            count += 1
+    if count == 0:  # If no valid marks exist
+        return 0
+    return total_marks / count  # Average = Sum of marks / Number of students who attended
+
+# Function to find the highest and lowest scores
+def find_highest_and_lowest(marks):
+    highest = float('-inf')  # Initialize highest to very small value
+    lowest = float('inf')    # Initialize lowest to very large value
+    for mark in marks:
+        if mark != "A":  # Exclude absent students (changed condition to "A")
+            if mark > highest:
+                highest = mark
+            if mark < lowest:
+                lowest = mark
+    if highest == float('-inf'):  # If no valid marks found
+        return None, None
+    return highest, lowest
+
+# Function to count the number of students absent for the test
+def count_absent_students(marks):
+    count = 0
+    for mark in marks:
+        if mark == "A":  # Check for absent students (changed condition to "A")
+            count += 1
+    return count
+
+# Function to find the mark with the highest frequency
+def find_highest_frequency(marks):
+    frequency = {}  # Dictionary to store frequencies of marks
+    for mark in marks:
+        if mark != "A":  # Exclude absent students (changed condition to "A")
+            if mark in frequency:
+                frequency[mark] += 1  # Increment frequency for existing mark
+            else:
+                frequency[mark] = 1  # Initialize frequency for a new mark
+    
+    max_frequency = 0
+    most_frequent_mark = None
+    for mark, freq in frequency.items():
+        if freq > max_frequency:  # Check for maximum frequency
+            max_frequency = freq
+            most_frequent_mark = mark
+    return most_frequent_mark, max_frequency
+
+# Main function to take input and display results
+def main():
+    # Input: Number of students and their marks
+    n = int(input("Enter the number of students: "))
+    print("Enter marks for each student (use 'A' for absent students):")  # Changed instruction for input
+    marks = []
+    for i in range(n):
+        mark = input(f"Enter marks for student {i+1}: ")  # Changed input type to string
+        if mark != "A":  # Convert to integer only if not "A"
+            mark = int(mark)
+        marks.append(mark)
+    
+    # Compute and display results
+    average = compute_average(marks)
+    print(f"\na) The average score of the class: {average:.2f}")
+    
+    highest, lowest = find_highest_and_lowest(marks)
+    if highest is not None:
+        print(f"b) The highest score: {highest}")
+        print(f"   The lowest score: {lowest}")
+    else:
+        print("b) No valid scores available to determine highest and lowest.")
+    
+    absent_count = count_absent_students(marks)
+    print(f"c) Number of students absent for the test: {absent_count}")
+    
+    most_frequent_mark, frequency = find_highest_frequency(marks)
+    if most_frequent_mark is not None:
+        print(f"d) The mark with the highest frequency: {most_frequent_mark} (appeared {frequency} times)")
+    else:
+        print("d) No valid marks to determine frequency.")
+
+# Execute the program
+if __name__ == "__main__":
+    main()
