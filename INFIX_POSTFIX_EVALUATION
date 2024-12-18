@@ -1,0 +1,112 @@
+/*Implement C++ program for expression conversion as infix to postfix and its evaluation 
+using stack based on given conditions: 
+1. Operands and operator, both must be single character.
+2. Input Postfix expression must be in a desired format.
+3. Only '+', '-', '*' and '/ ' operators are expected.*/
+#include <iostream>
+#include <stack>
+#include <string>
+using namespace std;
+
+// Function to check the precedence of operators
+int prec(char op) {
+    if (op == '*' || op == '/') return 2; // Higher precedence
+    if (op == '+' || op == '-') return 1; // Lower precedence
+    return 0;
+}
+
+// Function to check if a character is an operator
+bool isOperator(char ch) {
+    return (ch == '+' || ch == '-' || ch == '*' || ch == '/');
+}
+
+// Function to convert infix to postfix
+string infixtopostfix(string infix) {
+    stack<char> opstack;       // Stack to hold operators
+    string postfix = "";       // Resultant postfix expression
+
+    for (char ch : infix) {
+        // Case 1: If the character is an operand, add it to postfix
+        if (isalnum(ch)) {
+            postfix += ch;
+        }
+        // Case 2: If the character is '(', push it to the stack
+        else if (ch == '(') {
+            opstack.push(ch);
+        }
+        // Case 3: If the character is ')', pop until '(' is found
+        else if (ch == ')') {
+            while (!opstack.empty() && opstack.top() != '(') {
+                postfix += opstack.top();
+                opstack.pop();
+            }
+            opstack.pop(); // Remove '(' from stack
+        }
+        // Case 4: If the character is an operator
+        else if (isOperator(ch)) {
+            while (!opstack.empty() && prec(opstack.top()) >= prec(ch)) {
+                postfix += opstack.top();
+                opstack.pop();
+            }
+            opstack.push(ch); // Push current operator to stack
+        }
+    }
+
+    // Pop all remaining operators from the stack
+    while (!opstack.empty()) {
+        postfix += opstack.top();
+        opstack.pop();
+    }
+
+    return postfix;
+}
+
+// Function to evaluate a postfix expression
+int evaluate(string postfix) {
+    stack<int> operand; // Stack to hold operands
+
+    for (char ch : postfix) {
+        // If the character is a digit, push it to the stack
+        if (isdigit(ch)) {
+            operand.push(ch - '0'); // Convert character to integer
+        }
+        // If the character is an operator
+        else if (isOperator(ch)) {
+            int operand2 = operand.top(); operand.pop(); // Second operand
+            int operand1 = operand.top(); operand.pop(); // First operand
+            int result = 0;
+
+            // Perform the operation
+            switch (ch) {
+                case '+': result = operand1 + operand2; break;
+                case '-': result = operand1 - operand2; break;
+                case '*': result = operand1 * operand2; break;
+                case '/': result = operand1 / operand2; break;
+            }
+            operand.push(result); // Push the result back to the stack
+        }
+    }
+
+    return operand.top(); // Final result is at the top of the stack
+}
+
+// Main function to demonstrate the program
+int main() {
+    string infix, postfix;
+
+    cout << "Enter infix expression: ";
+    cin >> infix;
+
+    // Convert infix to postfix
+    postfix = infixtopostfix(infix);
+    cout << "Postfix Expression: " << postfix << endl;
+
+    // Evaluate the postfix expression if it contains digits
+    if (isdigit(postfix[0])) {
+        cout << "Result of Evaluation: " << evaluate(postfix) << endl;
+    } else {
+        cout << "Evaluation skipped (non-numeric operands)." << endl;
+    }
+
+    return 0;
+}
