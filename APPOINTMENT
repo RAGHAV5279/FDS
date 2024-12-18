@@ -1,0 +1,206 @@
+/*Write C++ program for storing appointment schedule for day. Appointments are booked 
+randomly using linked list. Set start and end time and min and max duration for visit slot. 
+Write functions for-
+A) Display free slots B) Book appointment C) Sort list based on time
+D) Cancel appointment ( check validity, time bounds, availability)
+E) Sort list based on time using pointer manipulation*/
+
+#include <iostream>
+using namespace std;
+
+// Class to represent a single appointment slot
+class Appointment {
+public:
+    int start_time;           // Start time of the appointment (e.g., 900 for 9:00 AM)
+    int end_time;             // End time of the appointment
+    Appointment* next;        // Pointer to the next appointment in the list
+
+    // Constructor to create a new appointment
+    Appointment(int start, int end) {
+        start_time = start;
+        end_time = end;
+        next = nullptr;
+    }
+};
+
+// Class to manage the list of appointments
+class Schedule {
+private:
+    Appointment* head;        // Pointer to the first appointment in the list
+    int day_start;            // Start of the working hours
+    int day_end;              // End of the working hours
+    int min_duration;         // Minimum appointment duration
+    int max_duration;         // Maximum appointment duration
+
+public:
+    // Constructor to initialize the schedule
+    Schedule(int start, int end, int min_dur, int max_dur) {
+        head = nullptr;        // Initially, the list is empty
+        day_start = start;     // Start of the day (e.g., 900 for 9:00 AM)
+        day_end = end;         // End of the day (e.g., 1700 for 5:00 PM)
+        min_duration = min_dur;
+        max_duration = max_dur;
+    }
+
+    // Function to show free slots in the schedule
+    void showFreeSlots() {
+        cout << "\n--- Free Slots ---" << endl;
+        int current_time = day_start;
+        Appointment* temp = head;
+
+        while (current_time < day_end) {
+            int next_slot;
+            if (temp == nullptr) {  
+                next_slot = day_end; // If no more appointments, free slot ends at day_end
+            } else {  
+                next_slot = temp->start_time; // Otherwise, free slot ends at the next appointment's start time
+            }
+
+            if (next_slot - current_time >= min_duration) {
+                cout << current_time << " to " << next_slot << endl;
+            }
+            if (temp == nullptr) {
+                current_time = next_slot;  // Move to the day_end
+            } else {
+                current_time = temp->end_time; // Move to the end time of the current appointment
+                temp = temp->next; // Move to the next appointment
+            }
+        }
+    }
+
+    // Function to book a new appointment
+    void bookAppointment(int start, int duration) {
+        if (duration < min_duration || duration > max_duration) {
+            cout << "Invalid duration! It must be between " << min_duration << " and " << max_duration << " minutes.\n";
+            return;
+        }
+
+        int end = start + duration;
+
+        if (start < day_start || end > day_end) {
+            cout << "Invalid time! Appointment is outside working hours.\n";
+            return;
+        }
+
+        // Check for overlapping appointments
+        Appointment* temp = head;
+        Appointment* prev = nullptr;
+
+        while (temp != nullptr && temp->start_time < end) {
+            if ((start >= temp->start_time && start < temp->end_time) || 
+                (end > temp->start_time && end <= temp->end_time)) {
+                cout << "Time slot is already booked!\n";
+                return;
+            }
+            prev = temp;
+            temp = temp->next;
+        }
+
+        // Insert the new appointment in sorted order
+        Appointment* new_appointment = new Appointment(start, end);
+
+        if (prev == nullptr) { // Insert at the beginning
+            new_appointment->next = head;
+            head = new_appointment;
+        } else { // Insert in between or at the end
+            new_appointment->next = prev->next;
+            prev->next = new_appointment;
+        }
+
+        cout << "Appointment booked from " << start << " to " << end << "!\n";
+    }
+
+    // Function to show all booked appointments
+    void showAppointments() {
+        if (head == nullptr) {
+            cout << "No appointments scheduled.\n";
+            return;
+        }
+        cout << "\n--- Booked Appointments ---" << endl;
+        Appointment* temp = head;
+
+        while (temp != nullptr) {
+            cout << temp->start_time << " to " << temp->end_time << endl;
+            temp = temp->next;
+        }
+    }
+
+    // Function to cancel an appointment
+    void cancelAppointment(int start) {
+        Appointment* temp = head;
+        Appointment* prev = nullptr;
+
+        while (temp != nullptr) {
+            if (temp->start_time == start) {
+                if (prev == nullptr) {
+                    head = temp->next; // Cancel first appointment
+                } else {
+                    prev->next = temp->next; // Cancel middle or last appointment
+                }
+                delete temp;
+                cout << "Appointment starting at " << start << " has been cancelled.\n";
+                return;
+            }
+            prev = temp;
+            temp = temp->next;
+        }
+        cout << "No appointment found starting at " << start << ".\n";
+    }
+};
+
+// Main function
+int main() {
+    int start_time = 900, end_time = 1700; // Day starts at 9:00 AM and ends at 5:00 PM
+    int min_duration = 30, max_duration = 120;
+
+    Schedule scheduler(start_time, end_time, min_duration, max_duration);
+
+    int choice;
+    do {
+        cout << "\n--- Appointment Scheduler Menu ---";
+        cout << "\n1. Show Free Slots";
+        cout << "\n2. Book Appointment";
+        cout << "\n3. Show Booked Appointments";
+        cout << "\n4. Cancel Appointment";
+        cout << "\n5. Exit";
+        cout << "\nEnter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                scheduler.showFreeSlots();
+                break;
+
+            case 2: {
+                int start, duration;
+                cout << "Enter start time (e.g., 900 for 9:00 AM): ";
+                cin >> start;
+                cout << "Enter duration (in minutes): ";
+                cin >> duration;
+                scheduler.bookAppointment(start, duration);
+                break;
+            }
+
+            case 3:
+                scheduler.showAppointments();
+                break;
+
+            case 4: {
+                int start;
+                cout << "Enter start time of appointment to cancel: ";
+                cin >> start;
+                scheduler.cancelAppointment(start);
+                break;
+            }
+
+            case 5:
+                cout << "Exiting... Have a great day!\n";
+                break;
+
+            default:
+                cout << "Invalid choice! Try again.\n";
+        }
+    } while (choice != 5);
+
+    return 0;
+}
