@@ -1,0 +1,113 @@
+/*Queues are frequently used in computer programming, and a typical example is the 
+creation of a job queue by an operating system. If the operating system does not use 
+priorities, then the jobs are processed in the order they enter the system. Write C++ 
+program for simulating job queue. Write functions to add job and delete job from queue.*/
+
+#include <iostream>
+#include <string>
+using namespace std;
+
+// Maximum size of the queue
+#define MAX 100
+
+class JobQueue {
+private:
+    string jobs[MAX]; // Array to store the jobs
+    int front;        // Points to the front of the queue
+    int rear;         // Points to the rear of the queue
+
+public:
+    // Constructor to initialize the queue
+    JobQueue() {
+        front = -1;
+        rear = -1;
+    }
+
+    // Function to check if the queue is empty
+    bool isEmpty() {
+        return (front == -1 || front > rear);
+    }
+
+    // Function to check if the queue is full
+    bool isFull() {
+        return (rear == MAX - 1);
+    }
+
+    // Function to add a job to the queue
+    void addJob(string job) {
+        if (isFull()) {
+            cout << "Queue is full! Cannot add more jobs.\n";
+            return;
+        }
+        if (front == -1) {
+            front = 0; // Set front to 0 when adding the first job
+        }
+        jobs[++rear] = job; // Add job to the rear and increment rear
+        cout << "Job added to the queue: " << job << endl;
+    }
+
+    // Function to delete a job from the queue
+    void deleteJob() {
+        if (isEmpty()) {
+            cout << "Queue is empty! No jobs to delete.\n";
+            return;
+        }
+        cout << "Job deleted from the queue: " << jobs[front] << endl;
+        front++; // Move the front pointer to the next job
+    }
+
+    // Function to display all jobs in the queue
+    void displayQueue() {
+        if (isEmpty()) {
+            cout << "Queue is empty! No jobs to display.\n";
+            return;
+        }
+        cout << "Jobs in the queue:\n";
+        for (int i = front; i <= rear; i++) {
+            cout << i + 1 << ". " << jobs[i] << endl; // Display jobs with index
+        }
+    }
+};
+
+// Main function to demonstrate the Job Queue
+int main() {
+    JobQueue queue; // Create a JobQueue object
+    int choice;
+    string job;
+
+    do {
+        cout << "\n--- Job Queue Menu ---";
+        cout << "\n1. Add Job";
+        cout << "\n2. Delete Job";
+        cout << "\n3. Display Jobs";
+        cout << "\n4. Exit";
+        cout << "\nEnter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+        case 1:
+            cout << "Enter the job description: ";
+            cin.ignore(); // To ignore any leftover newline character
+            getline(cin, job);
+            queue.addJob(job);
+            break;
+
+        case 2:
+            queue.deleteJob();
+            break;
+
+        case 3:
+            queue.displayQueue();
+            break;
+
+        case 4:
+            cout << "Exiting...\n";
+            break;
+
+        default:
+            cout << "Invalid choice! Please try again.\n";
+        }
+    } while (choice != 4);
+
+    return 0;
+}
