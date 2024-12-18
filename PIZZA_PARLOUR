@@ -1,0 +1,142 @@
+/*Pizza parlor accepting maximum M orders. Orders are served in first come first served 
+basis. Order once placed cannot be cancelled. Write C++ program to simulate the system 
+using circular queue using array.*/
+
+#include <iostream>
+using namespace std;
+
+class CircularQueue {
+private:
+    int front, rear, size;
+    int* queue; // Dynamic array to store orders
+
+public:
+    // Constructor to initialize the queue
+    CircularQueue(int maxSize) {
+        size = maxSize;
+        queue = new int[size];
+        front = -1;
+        rear = -1;
+    }
+
+    // Function to check if the queue is full
+    bool isFull() {
+        return (front == 0 && rear == size - 1) || (rear == front - 1);
+    }
+
+    // Function to check if the queue is empty
+    bool isEmpty() {
+        return front == -1;
+    }
+
+    // Function to add an order to the queue
+    void placeOrder(int order) {
+        if (isFull()) {
+            cout << "The queue is full. No more orders can be placed.\n";
+            return;
+        }
+
+        if (isEmpty()) { // If the queue is initially empty
+            front = rear = 0;
+        } else if (rear == size - 1 && front != 0) { // Wrap around to the beginning
+            rear = 0;
+        } else {
+            rear++;
+        }
+
+        queue[rear] = order;
+        cout << "Order " << order << " placed successfully.\n";
+    }
+
+    // Function to serve the next order in the queue
+    void serveOrder() {
+        if (isEmpty()) {
+            cout << "The queue is empty. No orders to serve.\n";
+            return;
+        }
+
+        cout << "Order " << queue[front] << " is served.\n";
+
+        if (front == rear) { // If the queue becomes empty
+            front = rear = -1;
+        } else if (front == size - 1) { // Wrap around to the beginning
+            front = 0;
+        } else {
+            front++;
+        }
+    }
+
+    // Function to display all pending orders
+    void displayOrders() {
+        if (isEmpty()) {
+            cout << "No pending orders.\n";
+            return;
+        }
+
+        cout << "Pending orders: ";
+        if (front <= rear) {
+            for (int i = front; i <= rear; i++) {
+                cout << queue[i] << " ";
+            }
+        } else {
+            for (int i = front; i < size; i++) {
+                cout << queue[i] << " ";
+            }
+            for (int i = 0; i <= rear; i++) {
+                cout << queue[i] << " ";
+            }
+        }
+        cout << endl;
+    }
+
+    // Destructor to free allocated memory
+    ~CircularQueue() {
+        delete[] queue;
+    }
+};
+
+// Main function
+int main() {
+    int maxSize, choice, order;
+
+    cout << "Enter the maximum number of orders the system can handle: ";
+    cin >> maxSize;
+
+    CircularQueue pizzaQueue(maxSize);
+
+    // Menu-driven program
+    while (true) {
+        cout << "\n--- Pizza Parlor System ---\n";
+        cout << "1. Place an Order\n";
+        cout << "2. Serve an Order\n";
+        cout << "3. Display Pending Orders\n";
+        cout << "4. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+        case 1:
+            cout << "Enter the order number to place: ";
+            cin >> order;
+            pizzaQueue.placeOrder(order);
+            break;
+
+        case 2:
+            pizzaQueue.serveOrder();
+            break;
+
+        case 3:
+            pizzaQueue.displayOrders();
+            break;
+
+        case 4:
+            cout << "Exiting the system. Goodbye!\n";
+            return 0;
+
+        default:
+            cout << "Invalid choice. Please try again.\n";
+        }
+    }
+
+    return 0;
+}
